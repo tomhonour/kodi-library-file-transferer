@@ -1,4 +1,6 @@
 # kodi-library-file-transfer-tool
+## Demo
+[![demo](https://asciinema.org/a/GsMBSGa3Im7t6L6Fc4ORT5e6i.svg)](https://asciinema.org/a/GsMBSGa3Im7t6L6Fc4ORT5e6i?autoplay=1)
 
 Kodi recommends a library structure like so:
 ```

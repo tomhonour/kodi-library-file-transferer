@@ -14,7 +14,8 @@ do
 	filename=$(
 	echo "$line" |\
 	awk -F/ '{print $(NF)}' |\
-	cut -d'.' -f1
+# cut failed because of '.'s in the filename
+	sed 's/\(.*\)\..*/\1/'
 	)
 	filetype=$(
 	echo "$line" |\
@@ -31,7 +32,7 @@ read dir
 
 case $dir in
 home)
-	outdir=$(find /home -type d | fzf --prompt="Select destination folder: ")
+	outdir=$(find /home/user/Videos/asciinema -type d | fzf --prompt="Select destination folder: ")
 	;;
 media)
 	outdir=$(find /media -type d | fzf --prompt="Select destination folder: ")
@@ -52,7 +53,8 @@ do
 	temp=$(
 	echo "$line" |\
 	awk -F/ '{print $(NF)}' |\
-	cut -d'.' -f1
+# cut failed because of '.'s in the filename
+	sed 's/\(.*\)\..*/\1/'
 	)
 	mkdir -p "$outdir"/"$temp"
 	cp -n "$line" "$outdir"/"$temp"
