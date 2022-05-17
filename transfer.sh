@@ -1,6 +1,6 @@
 #!/bin/bash
 
-filename=$(find . -name "*.mp4" -o -name "*.mkv" | fzf -m --prompt="Select the files you want to rename: ")
+filename=$(find . -name "*.mp4" -o -name "*.mkv" | fzf -m --prompt="Select the files you want to rename (Press Esc to skip): ")
 
 echo "$filename" > oldnames.txt
 echo "$filename" |\
@@ -9,30 +9,38 @@ do
 	[[ "$line" ]] || break
 	path=$(
 	echo "$line" |\
+# taken from stackexchange
 	awk 'BEGIN{FS=OFS="/"}{NF--; print}'
 	)
 	filename=$(
 	echo "$line" |\
 	awk -F/ '{print $(NF)}' |\
-# cut failed because of '.'s in the filename
+# taken from stackexchange
 	sed 's/\(.*\)\..*/\1/'
 	)
 	filetype=$(
 	echo "$line" |\
 	awk -F. '{print $(NF)}'
 	)
-	echo -n "Enter a new filename for: "
-	echo "$filename"
+	echo -n "Enter a new filename for "
+	echo -n "$filename"
+	echo " (Press Enter to skip):"
 	read newname </dev/tty
+	case $newname in
+	"")
+	;;
+	*)
 	mv "$line" "$path"/"$newname"."$filetype"
+	;;
+	esac
 done
 
 echo "Is your destination folder in /home or /media? (Type either home or media):"
 read dir
 
-case $dir in
+case "$dir" in
 home)
-	outdir=$(find /home/user/Videos/asciinema -type d | fzf --prompt="Select destination folder: ")
+	outdir=$(find /home -type d | fzf --prompt="Select destination folder: ")
 	;;
 media)
 	outdir=$(find /media -type d | fzf --prompt="Select destination folder: ")
@@ -53,12 +61,11 @@ do
 	temp=$(
 	echo "$line" |\
 	awk -F/ '{print $(NF)}' |\
-# cut failed because of '.'s in the filename
+# taken from stackexchange
 	sed 's/\(.*\)\..*/\1/'
 	)
 	mkdir -p "$outdir"/"$temp"
-	cp -n "$line" "$outdir"/"$temp"
-# cp -i fails for some reason.
+	cp -i "$line" "$outdir"/"$temp" </dev/tty
 done
 
 echo "Complete."
