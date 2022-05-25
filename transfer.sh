@@ -1,5 +1,17 @@
 #!/bin/bash
 
+spinner=( '|' '/' '-' '\' )
+spin(){
+	while [ 1 ]
+	do
+		for i in "${spinner[@]}"
+		do
+			echo -ne "\r$i"
+			sleep 0.2
+		done
+	done
+}
+
 filename=$(find . -name "*.mp4" -o -name "*.mkv" | fzf -m --prompt="Select the files you want to rename (Press Esc to skip): ")
 
 echo "$filename" > oldnames.txt
@@ -25,7 +37,7 @@ do
 	echo -n "Enter a new filename for "
 	echo -n "$filename"
 	echo " (Press Enter to skip):"
-	read newname </dev/tty
+	read newname < /dev/tty
 	case $newname in
 	"")
 	;;
@@ -58,6 +70,8 @@ while read line
 do
 	[[ "$line" ]] || break
 	echo "Moving file: $line"
+spin &
+pid=$!
 	temp=$(
 	echo "$line" |\
 	awk -F/ '{print $(NF)}' |\
@@ -65,7 +79,9 @@ do
 	sed 's/\(.*\)\..*/\1/'
 	)
 	mkdir -p "$outdir"/"$temp"
-	cp -i "$line" "$outdir"/"$temp" </dev/tty
+	cp -i "$line" "$outdir"/"$temp" < /dev/tty
+kill "$pid"
+echo ""
 done
 
 echo "Complete."
