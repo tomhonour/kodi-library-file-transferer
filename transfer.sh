@@ -37,7 +37,7 @@ do
 	echo -n "Enter a new filename for "
 	echo -n "$filename"
 	echo " (Press Enter to skip):"
-	read newname < /dev/tty
+	read -e newname < /dev/tty
 	case $newname in
 	"")
 	;;
@@ -48,7 +48,7 @@ do
 done
 
 echo "Is your destination folder in /home or /media? (Type either home or media):"
-read dir
+read -e dir
 
 case "$dir" in
 home)
